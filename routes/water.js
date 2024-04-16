@@ -11,18 +11,24 @@ router.get('/data/district', async (ctx, next) => {
     const data = await getDataDistrict(name, months);
     if (data) {
         ctx.body = new SuccessModel(data);
+        ctx.body.total = months;
     } else {
         ctx.body = new ErrorModel('Error');
     }
 });
 
 router.get('/data/factory', async (ctx, next) => {
-    const name = ctx.query.name ? ctx.query.name : 'shenzhen';
+    if (!ctx.query.name) {
+        ctx.body = new ErrorModel('Error');
+        return;
+    }
+    const name = ctx.query.name;
     const months = ctx.query.months ? parseInt(ctx.query.months, 10) : 6;
 
     const data = await getDataFactory(name, months);
     if (data) {
         ctx.body = new SuccessModel(data);
+        ctx.body.total = months;
     } else {
         ctx.body = new ErrorModel('Error');
     }

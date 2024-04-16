@@ -13,7 +13,8 @@ const getDataDistrict = async (name='深圳市', months=6) => {
 
 // 获取水样数据 --- 水厂
 const getDataFactory = async (name='', months=6) => {
-    let sql = `SELECT * FROM ${name} ORDER BY month DESC LIMIT ${months};`;  
+    if (name === '') { return []; }
+    let sql = `SELECT * FROM factory_datas WHERE name='${name}' ORDER BY month DESC LIMIT ${months};`;  
     const res = await exec(sql);
 
     return res;
