@@ -12,7 +12,8 @@ const getUserData = async (page=1, size=10, search) => {
     let sql = `SELECT * FROM users`;
     let countSql = `SELECT COUNT(*) AS total FROM users`;
     if (search) {
-        sql += ` WHERE column_name LIKE '%${search}%'`; // 这里替换成你的实际列名
+        sql += ` WHERE username LIKE '%${search}%'`;
+        countSql += ` WHERE username LIKE '%${search}%'`;
     }
     sql += ` LIMIT ${size} OFFSET ${offset}`;
 
