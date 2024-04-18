@@ -7,7 +7,7 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const cors = require('koa2-cors');
 
-const users = require('./routes/users')
+const users = require('./routes/users.js');
 const water = require('./routes/water.js');
 
 // error handler
@@ -37,6 +37,7 @@ app.use(async (ctx, next) => {
 
 // routes
 app.use(water.routes(), water.allowedMethods());
+app.use(users.routes(), users.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {
