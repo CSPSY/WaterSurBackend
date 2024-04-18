@@ -6,6 +6,7 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const cors = require('koa2-cors');
+import * as koaJwt from 'koa-jwt';
 
 const users = require('./routes/users.js');
 const water = require('./routes/water.js');
