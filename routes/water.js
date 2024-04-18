@@ -1,5 +1,5 @@
 const router = require('koa-router')();
-const { getDataDistrict, getDataFactory } = require('../controller/waterTest.js');
+const { getDataDistrict, getDataFactory, getDataAreaList, getDataFactoryList } = require('../controller/water.js');
 const { SuccessModel, ErrorModel } = require('../model/resModel.js');
 
 router.prefix('/water');
@@ -29,6 +29,26 @@ router.get('/data/factory', async (ctx, next) => {
     if (data) {
         ctx.body = new SuccessModel(data);
         ctx.body.total = months;
+    } else {
+        ctx.body = new ErrorModel('Error');
+    }
+});
+
+router.get('/area-list', async (ctx, next) => {
+    const { page, size, search } = ctx.query;
+    const data = await getDataAreaList(page, size, search);
+    if (data) {
+        ctx.body = new SuccessModel(data);
+    } else {
+        ctx.body = new ErrorModel('Error');
+    }
+});
+
+router.get('/factory-list', async (ctx, next) => {
+    const { page, size, search } = ctx.query;
+    const data = await getDataFactoryList(page, size, search);
+    if (data) {
+        ctx.body = new SuccessModel(data);
     } else {
         ctx.body = new ErrorModel('Error');
     }

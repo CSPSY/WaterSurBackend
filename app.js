@@ -6,7 +6,7 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const cors = require('koa2-cors');
-import * as koaJwt from 'koa-jwt';
+const koaJwt = require('koa-jwt');
 
 const users = require('./routes/users.js');
 const water = require('./routes/water.js');
@@ -27,6 +27,14 @@ app.use(views(__dirname + '/views', {
 }))
 // 使用 koa2-cors 中间件，处理跨域
 app.use(cors());
+// 使用 koa-jwt 中间件，jwt 鉴权
+app.use(
+  koaJwt({
+    secret: '1234567890-='
+  }).unless({
+    path: [/^\/water\/data/, '/user/login']
+  })
+);
 
 // logger
 app.use(async (ctx, next) => {
