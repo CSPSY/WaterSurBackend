@@ -22,17 +22,24 @@ const getDataFactory = async (name='', months=6) => {
 
 // 后台部分
 // 获取区域水样信息
-const getDataAreaList = async (page=1, size=5, search) => {
+const getDataAreaList = async (page=1, size=5, search, startTime, endTime) => {
     // 计算要跳过的行数，实现分页
     const offset = (page - 1) * size;
         
     // 构建 SQL 查询，并使用 LIMIT 和 OFFSET 子句进行分页
     let sql = `SELECT * FROM district_datas`;
     let countSql = `SELECT COUNT(*) AS total FROM district_datas`;
+    const params = [];
+
     if (search) {
         sql += ` WHERE district LIKE '%${search}%'`;
         countSql += ` WHERE district LIKE '%${search}%'`;
     }
+    if (startTime && endTime) {
+        sql += ` AND month >= '${startTime}' AND month <= '${endTime}'`;
+        countSql += ` AND month >= '${startTime}' AND month <= '${endTime}'`;
+    }
+
     sql += ` LIMIT ${size} OFFSET ${offset}`;
 
     // 执行查询并返回结果
