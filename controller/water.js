@@ -29,15 +29,22 @@ const getDataAreaList = async (page=1, size=5, search, startTime, endTime) => {
     // 构建 SQL 查询，并使用 LIMIT 和 OFFSET 子句进行分页
     let sql = `SELECT * FROM district_datas`;
     let countSql = `SELECT COUNT(*) AS total FROM district_datas`;
-    const params = [];
+    if (search || startTime || endTime) {
+        sql += ` WHERE`;
+        countSql += ` WHERE`;
+    }
 
     if (search) {
-        sql += ` WHERE district LIKE '%${search}%'`;
-        countSql += ` WHERE district LIKE '%${search}%'`;
+        sql += ` district LIKE '%${search}%'`;
+        countSql += ` district LIKE '%${search}%'`;
     }
     if (startTime && endTime) {
-        sql += ` AND month >= '${startTime}' AND month <= '${endTime}'`;
-        countSql += ` AND month >= '${startTime}' AND month <= '${endTime}'`;
+        if (search) {
+            sql += ` AND`;
+            countSql += ` AND`;
+        }
+        sql += ` month >= '${startTime}' AND month <= '${endTime}'`;
+        countSql += ` month >= '${startTime}' AND month <= '${endTime}'`;
     }
 
     sql += ` LIMIT ${size} OFFSET ${offset}`;
@@ -53,16 +60,37 @@ const getDataAreaList = async (page=1, size=5, search, startTime, endTime) => {
 };
 
 // 获取水厂水样信息
-const getDataFactoryList = async (page=1, size=5, search) => {
+const getDataFactoryList = async (page=1, size=5, factoryName, districtName, startTime, endTime) => {
     // 计算要跳过的行数，实现分页
     const offset = (page - 1) * size;
         
     // 构建 SQL 查询，并使用 LIMIT 和 OFFSET 子句进行分页
     let sql = `SELECT * FROM factory_datas`;
     let countSql = `SELECT COUNT(*) AS total FROM factory_datas`;
-    if (search) {
-        sql += ` WHERE name LIKE '%${search}%'`;
-        countSql += ` WHERE name LIKE '%${search}%'`;
+    if (factoryName || districtName || startTime || endTime) { 
+        sql += ` WHERE`;
+        countSql += ` WHERE`;
+    }
+
+    if (factoryName) {
+        sql += ` name LIKE '%${factoryName}%'`;
+        countSql += ` name LIKE '%${factoryName}%'`;
+    }
+    if (districtName) {
+        if (factoryName) {
+            sql += ` AND`;
+            countSql += ` AND`;
+        }
+        sql += ` district LIKE '%${districtName}%'`;
+        countSql += ` district LIKE '%${districtName}%'`;
+    }
+    if (startTime && endTime) {
+        if (factoryName || districtName) {
+            sql += ` AND`;
+            countSql += ` AND`;
+        }
+        sql += ` month >= '${startTime}' AND month <= '${endTime}'`;
+        countSql += ` month >= '${startTime}' AND month <= '${endTime}'`;
     }
     sql += ` LIMIT ${size} OFFSET ${offset}`;
 

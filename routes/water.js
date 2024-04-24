@@ -45,8 +45,8 @@ router.get('/area-list', async (ctx, next) => {
 });
 
 router.get('/factory-list', async (ctx, next) => {
-    const { page, size, search } = ctx.query;
-    const data = await getDataFactoryList(page, size, search);
+    const { page, size, factoryName, districtName, startTime, endTime } = ctx.query;
+    const data = await getDataFactoryList(page, size, factoryName, districtName, startTime, endTime);
     if (data) {
         ctx.body = new SuccessModel(data);
     } else {
