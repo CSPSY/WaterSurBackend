@@ -4,7 +4,7 @@
 const { exec } = require('../db/mysql');
 const jwt = require('jsonwebtoken');
 
-// 获取用户
+// 获取用户列表
 const getUserData = async (page=1, size=10, search) => {
     // 计算要跳过的行数，实现分页
     const offset = (page - 1) * size;
@@ -28,6 +28,7 @@ const getUserData = async (page=1, size=10, search) => {
     return { items, total };
 };
 
+// 登录
 const loginAdmin = async (email, password) => {
     // 查询数据库，验证用户名和密码
     const sql = `SELECT * FROM users WHERE email='${email}' AND password='${password}'`;
@@ -56,6 +57,7 @@ const loginAdmin = async (email, password) => {
     };
 };
 
+// 根据 token 获取用户信息
 const getUserInfo = async (userId, username) => {
     // 查询数据库，验证用户名和密码
     const sql = `SELECT * FROM users WHERE id='${userId}' AND username='${username}'`;
@@ -79,6 +81,43 @@ const getUserInfo = async (userId, username) => {
     };
 };
 
+// 添加用户
+const addUser = async (data) => {
+    const { username, password, realname, email, role, telephone } = data;
+    if (!email || !password || role !== 0 && role !== -1) {
+        return { message: '添加用户失败' };
+    }
+
+    let sql = `SELECT * FROM users WHERE email='${email}'`;
+    const user = await exec(sql);
+    
+    if (user.length > 0) {
+        return {
+            message: '该邮箱已注册'
+        };
+    }
+
+    sql = `INSERT INTO users (username, password, realname, role, telephone, email)
+        VALUES ('${username}', '${password}', '${realname}', ${role}, '${telephone}', '${email}')`;
+    await exec(sql);
+
+    return {
+        code: 0,
+        message: '添加用户成功'
+    }
+};
+
+// 删除用户
+const delUser = async () => {
+
+};
+
+// 编辑用户
+const editUser = async () => {
+
+};
+
 module.exports = {
-    getUserData, loginAdmin, getUserInfo
+    getUserData, loginAdmin, getUserInfo,
+    addUser, delUser, editUser
 }

@@ -1,9 +1,10 @@
 const router = require('koa-router')();
-const { getUserData, loginAdmin, getUserInfo } = require('../controller/user.js');
+const { getUserData, loginAdmin, getUserInfo, addUser } = require('../controller/user.js');
 const { SuccessModel, ErrorModel } = require('../model/resModel.js');
 
 router.prefix('/user');
 
+// 获取用户列表
 router.get('/data', async (ctx, next) => {
     const { page, size, search } = ctx.query;
     const data = await getUserData(page, size, search);
@@ -15,6 +16,7 @@ router.get('/data', async (ctx, next) => {
     }
 });
 
+// 登录
 router.post('/login', async (ctx, next) => {
     const { email, password } = ctx.request.body;
     
@@ -26,12 +28,24 @@ router.post('/login', async (ctx, next) => {
     }
 });
 
+// 根据 token 获取用户信息
 router.get('/info', async(ctx, next) => {
     const { userId, username } = ctx.state.user;
 
     const data = await getUserInfo(userId, username);
     
     if (data.user) {
+        ctx.body = new SuccessModel(data);
+    } else {
+        ctx.body = new ErrorModel(data.message);
+    }
+});
+
+// 添加用户
+router.post('/reg', async(ctx, next) => {
+    const data = await addUser(ctx.request.body);
+
+    if (data.code === 0) {
         ctx.body = new SuccessModel(data);
     } else {
         ctx.body = new ErrorModel(data.message);
