@@ -41,7 +41,7 @@ const loginAdmin = async (email, password) => {
     }
     
     // 用户身份验证成功，生成访问令牌（JWT）
-    const token = jwt.sign({ userId: user[0].id, username: user[0].username }, '1234567890-=', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user[0].id, username: user[0].username, role: user[0].role }, '1234567890-=', { expiresIn: '1h' });
 
     return {
         token,
@@ -104,12 +104,18 @@ const addUser = async (data) => {
     return {
         code: 0,
         message: '添加用户成功'
-    }
+    };
 };
 
 // 删除用户
-const delUser = async () => {
+const delUser = async (userId) => {
+    const sql = `DELETE FROM users WHERE id=${userId}`;
+    await exec(sql);
 
+    return {
+        code: 0,
+        message: '删除用户成功'
+    };
 };
 
 // 编辑用户
