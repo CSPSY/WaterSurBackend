@@ -1,5 +1,5 @@
 const router = require('koa-router')();
-const { getUserData, loginAdmin, getUserInfo, addUser, delUser } = require('../controller/user.js');
+const { getUserData, loginAdmin, getUserInfo, addUser, delUser, editUser } = require('../controller/user.js');
 const { SuccessModel, ErrorModel } = require('../model/resModel.js');
 
 router.prefix('/user');
@@ -66,6 +66,23 @@ router.delete('/:userId', async(ctx, next) => {
     } else {
         ctx.body = new ErrorModel(data.message);
     }
+});
+
+// 编辑用户
+router.put('/:userId', async(ctx, next) => {
+    const userId = ctx.params.userId;
+    const newInfo = ctx.request.body;
+    if (ctx.state.user.role !== 0) {
+        ctx.body = new ErrorModel('用户无权限');
+    }
+
+    const data = await editUser(userId,newInfo);
+
+    if (data.code === 0) {
+        ctx.body = new SuccessModel(data);
+    } else {
+        ctx.body = new ErrorModel(data.message);
+    }    
 });
 
 module.exports = router;

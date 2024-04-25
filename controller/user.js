@@ -109,7 +109,14 @@ const addUser = async (data) => {
 
 // 删除用户
 const delUser = async (userId) => {
-    const sql = `DELETE FROM users WHERE id=${userId}`;
+    let sql = `SELECT * FROM users WHERE id=${userId}`;
+    const user = await exec(sql);
+
+    if (user.length === 0) {
+        return { message: '该用户不存在' };
+    }
+
+    sql = `DELETE FROM users WHERE id=${userId}`;
     await exec(sql);
 
     return {
@@ -119,8 +126,26 @@ const delUser = async (userId) => {
 };
 
 // 编辑用户
-const editUser = async () => {
+const editUser = async (userId, data) => {
+    let sql = `SELECT * FROM users WHERE id=${userId}`;
+    const user = await exec(sql);
 
+    if (user.length === 0) {
+        return { message: '该用户不存在' };
+    }
+
+    const username = data.username || user[0].username;
+    const realname = data.realname || user[0].realname;
+    const role = data.role || user[0].role;
+    const telephone = data.telephone || user[0].telephone;
+    
+    sql = `UPDATE users SET username='${username}', realname='${realname}',
+        role=${role}, telephone='${telephone}' WHERE id=${userId}`;
+    await exec(sql);
+    
+    return {
+        message: '编辑用户信息成功'
+    };
 };
 
 module.exports = {
