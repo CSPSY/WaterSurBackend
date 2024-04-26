@@ -104,7 +104,25 @@ const getDataFactoryList = async (page=1, size=5, factoryName, districtName, sta
     return { items, total };
 };
 
+// 删除水厂水样信息
+const delWaterFactoryInfo = async (id) => {
+    let sql = `SELECT * FROM factory_datas WHERE id=${id}`;
+    const waterInfo = await exec(sql);
+
+    if (waterInfo.length === 0) {
+        return { message: '该水样信息不存在' };
+    }
+
+    sql = `DELETE FROM factory_datas WHERE id=${id}`;
+    await exec(sql);
+
+    return {
+        code: 0,
+        message: '删除水样信息成功'
+    };
+};
+
 module.exports = {
     getDataDistrict, getDataFactory,
-    getDataAreaList, getDataFactoryList
+    getDataAreaList, getDataFactoryList, delWaterFactoryInfo
 }
