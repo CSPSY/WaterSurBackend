@@ -116,13 +116,87 @@ const delWaterFactoryInfo = async (id) => {
     sql = `DELETE FROM factory_datas WHERE id=${id}`;
     await exec(sql);
 
+    sql = `SELECT 
+            month, AVG(turbidity) AS avg_turbidity, AVG(platinum_cobalt_color) AS avg_platinum_cobalt_color,
+            AVG(ph_value) AS avg_ph_value, AVG(free_chlorine) AS avg_free_chlorine, AVG(total_coliform) AS avg_total_coliform,
+            AVG(total_bacteria) AS avg_total_bacteria, district
+        FROM 
+            factory_datas
+        GROUP BY 
+            month, district;`
+
+    const avgWaterInfo = await exec(sql);
+    sql = `UPDATE
+            district_datas
+        SET
+            free_chlorine=${avgWaterInfo[0].avg_free_chlorine}, ph_value=${avgWaterInfo[0].avg_ph_value}, turbidity=${avgWaterInfo[0].avg_turbidity},
+            platinum_cobalt_color=${avgWaterInfo[0].avg_platinum_cobalt_color}, total_coliform=${avgWaterInfo[0].avg_total_coliform},
+            total_bacteria=${avgWaterInfo[0].avg_total_bacteria}
+        WHERE
+            district='${avgWaterInfo[0].district}' AND month='${avgWaterInfo[0].month}'`;
+    await exec(sql);
+
     return {
         code: 0,
         message: '删除水样信息成功'
     };
 };
 
+// 编辑水厂水样信息
+const editWaterFactoryInfo = async (id, data) => {
+    let sql = `SELECT * FROM factory_datas WHERE id=${id}`;
+    const waterInfo = await exec(sql);
+
+    if (waterInfo.length === 0) {
+        return { message: '该水样信息不存在' };
+    }
+
+    const name = data.name;
+    const district = data.district;
+    const month = data.month;
+    const free_chlorine = data.free_chlorine;
+    const ph_value = data.ph_value;
+    const platinum_cobalt_color = data.platinum_cobalt_color;
+    const turbidity = data.turbidity;
+    const total_coliform = data.total_coliform;
+    const total_bacteria = data.total_bacteria;
+
+    sql = `UPDATE
+            factory_datas
+        SET
+            name='${name}', district='${district}', month='${month}', free_chlorine=${free_chlorine}, ph_value=${ph_value},
+            platinum_cobalt_color=${platinum_cobalt_color}, turbidity=${turbidity}, total_coliform=${total_coliform}, total_bacteria=${total_bacteria}
+        WHERE
+            id=${id}`;
+    await exec(sql);
+
+    sql = `SELECT 
+            month, AVG(turbidity) AS avg_turbidity, AVG(platinum_cobalt_color) AS avg_platinum_cobalt_color,
+            AVG(ph_value) AS avg_ph_value, AVG(free_chlorine) AS avg_free_chlorine, AVG(total_coliform) AS avg_total_coliform,
+            AVG(total_bacteria) AS avg_total_bacteria, district
+        FROM 
+            factory_datas
+        GROUP BY 
+            month, district;`
+
+    const avgWaterInfo = await exec(sql);
+    sql = `UPDATE
+            district_datas
+        SET
+            free_chlorine=${avgWaterInfo[0].avg_free_chlorine}, ph_value=${avgWaterInfo[0].avg_ph_value}, turbidity=${avgWaterInfo[0].avg_turbidity},
+            platinum_cobalt_color=${avgWaterInfo[0].avg_platinum_cobalt_color}, total_coliform=${avgWaterInfo[0].avg_total_coliform},
+            total_bacteria=${avgWaterInfo[0].avg_total_bacteria}
+        WHERE
+            district='${avgWaterInfo[0].district}' AND month='${avgWaterInfo[0].month}'`;
+    await exec(sql);
+
+    return {
+        code: 0,
+        message: '编辑水样信息成功'
+    };
+};
+
 module.exports = {
     getDataDistrict, getDataFactory,
-    getDataAreaList, getDataFactoryList, delWaterFactoryInfo
+    getDataAreaList, getDataFactoryList, delWaterFactoryInfo, editWaterFactoryInfo
 }

@@ -1,6 +1,6 @@
 const router = require('koa-router')();
 const { getDataDistrict, getDataFactory,
-    getDataAreaList, getDataFactoryList, delWaterFactoryInfo } = require('../controller/water.js');
+    getDataAreaList, getDataFactoryList, delWaterFactoryInfo, editWaterFactoryInfo } = require('../controller/water.js');
 const { SuccessModel, ErrorModel } = require('../model/resModel.js');
 
 router.prefix('/water');
@@ -62,9 +62,22 @@ router.get('/factory-list', async (ctx, next) => {
 // 删除水厂水样信息
 router.delete('/factory/:id', async (ctx, next) => {
     const id = ctx.params.id;
-    console.log(id);
     
     const data = await delWaterFactoryInfo(id);
+
+    if (data.code === 0) {
+        ctx.body = new SuccessModel(data);
+    } else {
+        ctx.body = new ErrorModel(data.message);
+    }
+});
+
+// 编辑水厂水样信息
+router.put('/factory/:id', async (ctx, next) => {
+    const id = ctx.params.id;
+    const waterInfo = ctx.request.body;
+
+    const data = await editWaterFactoryInfo(id, waterInfo);
 
     if (data.code === 0) {
         ctx.body = new SuccessModel(data);
