@@ -235,8 +235,6 @@ const createWaterFactoryInfo = async (data) => {
 
     const avgWaterInfo = await exec(sql);
 
-    console.log('avgWaterInfo', avgWaterInfo[0])
-
     sql = `
         INSERT INTO district_datas (month, turbidity, platinum_cobalt_color, ph_value, free_chlorine, total_coliform, total_bacteria, district)
         VALUES ('${avgWaterInfo[0].month}', ${avgWaterInfo[0].avg_turbidity}, ${avgWaterInfo[0].avg_platinum_cobalt_color}, 

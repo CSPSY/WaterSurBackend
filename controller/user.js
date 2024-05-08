@@ -144,6 +144,7 @@ const editUser = async (userId, data) => {
     await exec(sql);
     
     return {
+        code: 0,
         message: '编辑用户信息成功'
     };
 };
